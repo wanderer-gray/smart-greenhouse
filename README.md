@@ -1,5 +1,5 @@
 # smart-greenhouse-backend
-ТюмГУ, ИВ, МЛР, "smart-greenhouse"
+ТюмГУ, ИВ, МЛР, 22 ИБАС 188
 
 ## Launch
 - `git clone git@github.com:wanderer-gray/smart-greenhouse-backend.git`
