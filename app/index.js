@@ -15,6 +15,7 @@ module.exports = (app, _, done) => {
     }
   })
 
+  app.register(require('./auth'), { prefix: '/auth' })
   app.register(require('./api'), { prefix: '/api' })
 
   done()

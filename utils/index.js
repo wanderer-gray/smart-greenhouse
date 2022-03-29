@@ -3,7 +3,16 @@ const {
   randomStringSync
 } = require('./random')
 
+const {
+  getSalt,
+  getHash,
+  checkHash
+} = require('./hash')
+
 module.exports = {
   randomString,
-  randomStringSync
+  randomStringSync,
+  getSalt,
+  getHash,
+  checkHash
 }

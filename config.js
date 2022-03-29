@@ -25,4 +25,4 @@ module.exports = {
       secret: randomStringSync(512)
     }
   }
-}[process.env.NODE_ENV ?? 'development']
+}
