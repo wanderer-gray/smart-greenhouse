@@ -16,7 +16,7 @@ app.register(require('fastify-oas'), {
   swagger: {
     info: {
       title: 'smart-greenhouse',
-      description: 'ТюмГУ, ИВ, МЛР, "smart-greenhouse"',
+      description: 'ТюмГУ, ИВ, МЛР, 22 ИБАС 188',
       version: '1.0.0'
     },
     schemes: ['http'],
