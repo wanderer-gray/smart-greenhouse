@@ -2,6 +2,8 @@ const config = require('./config')[process.env.NODE_ENV ?? 'development']
 
 const fastify = require('fastify')()
 
+const configServer = config.server
+
 fastify.register(require('fastify-oas'), {
   routePrefix: '/documentation',
   swagger: {
@@ -13,6 +15,10 @@ fastify.register(require('fastify-oas'), {
     schemes: ['http'],
     consumes: ['application/json'],
     produces: ['application/json'],
+    servers: [{
+      url: `http://${configServer.host}:${configServer.port}`,
+      description: 'Local server'
+    }],
     tags: [
       { name: 'Auth', description: 'Аутентификация' },
       { name: 'IoT', description: 'Интернет вещей' },
@@ -43,7 +49,7 @@ fastify.ready((err) => {
   fastify.oas()
 })
 
-fastify.listen(config.server, (err) => {
+fastify.listen(configServer, (err) => {
   if (err) {
     fastify.log.error(`Error starting server: ${err}`)
     process.exit(1)
