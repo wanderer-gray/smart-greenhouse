@@ -2,7 +2,15 @@ const config = require('./config')[process.env.NODE_ENV ?? 'development']
 
 const fastify = require('fastify')()
 
-const configServer = config.server
+fastify.decorate('config', config)
+
+fastify.decorate('utils', require('./utils'))
+
+fastify.decorate('knex', require('knex')(config.knex))
+
+fastify.register(require('fastify-cookie'), config.cookie)
+
+fastify.register(require('fastify-sensible'))
 
 fastify.register(require('fastify-oas'), {
   routePrefix: '/documentation',
@@ -16,7 +24,7 @@ fastify.register(require('fastify-oas'), {
     consumes: ['application/json'],
     produces: ['application/json'],
     servers: [{
-      url: `http://${configServer.host}:${configServer.port}`,
+      url: `http://${config.server.host}:${config.server.port}`,
       description: 'Local server'
     }],
     tags: [
@@ -27,16 +35,6 @@ fastify.register(require('fastify-oas'), {
   },
   exposeRoute: true
 })
-
-fastify.register(require('fastify-cookie'), config.cookie)
-
-fastify.register(require('fastify-sensible'))
-
-fastify.decorate('config', config)
-
-fastify.decorate('utils', require('./utils'))
-
-fastify.decorate('knex', require('knex')(config.knex))
 
 fastify.register(require('./app'))
 
@@ -49,7 +47,7 @@ fastify.ready((err) => {
   fastify.oas()
 })
 
-fastify.listen(configServer, (err) => {
+fastify.listen(config.server, (err) => {
   if (err) {
     fastify.log.error(`Error starting server: ${err}`)
     process.exit(1)
