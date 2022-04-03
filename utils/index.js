@@ -4,15 +4,27 @@ const {
 } = require('./random')
 
 const {
+  checkAuth
+} = require('./request')
+
+const {
+  existsKnex
+} = require('./knex')
+
+const {
   getSalt,
   getHash,
-  checkHash
-} = require('./hash')
+  checkHash,
+  existsUserByEmail
+} = require('./user')
 
 module.exports = {
   randomString,
   randomStringSync,
+  checkAuth,
+  existsKnex,
   getSalt,
   getHash,
-  checkHash
+  checkHash,
+  existsUserByEmail
 }

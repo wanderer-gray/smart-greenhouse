@@ -11,7 +11,7 @@ module.exports = {
       }
     }
   },
-  handler: () => {
+  handler: function () {
     return new Date().toISOString()
   }
 }
