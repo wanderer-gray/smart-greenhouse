@@ -65,13 +65,21 @@ export default function Dashboard(props) {
       </AppBar>
 
       <div className="cards">
-      <LineChart />
-      <LineChart />
-      <LineChart />
-      <LineChart />
-      <LineChart />
-      <LineChart />
-
+        <div className="chartModal">
+          <LineChart />
+        </div>
+        <div className="chartModal">
+          <LineChart />
+        </div>
+        <div className="chartModal">
+          <LineChart />
+        </div>
+        <div className="chartModal">
+          <LineChart />
+        </div>
+        <div className="chartModal">
+          <LineChart />
+        </div>
       </div>
     </div>
   );
