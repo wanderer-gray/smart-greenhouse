@@ -7,7 +7,7 @@ const getSalt = () => randomString(16)
 
 const getHash = (password, salt) =>
   new Promise((resolve, reject) => {
-    crypto.pbkdf2(password, salt, 1024, 32, 'sha512', (err, buffer) => {
+    crypto.pbkdf2(password, salt, 1024, 64, 'sha512', (err, buffer) => {
       if (err) {
         return reject(err)
       }

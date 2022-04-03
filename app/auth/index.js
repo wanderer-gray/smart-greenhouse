@@ -4,6 +4,7 @@ module.exports = (app, _, done) => {
   app.get('/existsEmail', require('./existsEmail'))
   app.post('/login', require('./login'))
   app.delete('/logout', require('./logout'))
+  app.post('/sendRegisterToken', require('./sendRegisterToken'))
   // app.put('/restore', require('./restore'))
   // app.post('/register', require('./register'))
 

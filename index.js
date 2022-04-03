@@ -8,6 +8,25 @@ fastify.decorate('utils', require('./utils'))
 
 fastify.decorate('knex', require('knex')(config.knex))
 
+fastify.decorate('sendMail', ({
+  from = config.mailer.auth.user,
+  to,
+  subject,
+  text
+}) => {
+  const transporter = require('nodemailer').createTransport(config.mailer)
+
+  return new Promise((resolve, reject) => {
+    transporter.sendMail({ from, to, subject, text }, (err, info) => {
+      if (err) {
+        return reject(err)
+      }
+
+      return resolve(info)
+    })
+  })
+})
+
 fastify.register(require('fastify-cookie'), config.cookie)
 
 fastify.register(require('fastify-sensible'))

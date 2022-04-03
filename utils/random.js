@@ -13,8 +13,25 @@ const randomString = (size) =>
 
 const randomStringSync = (size) => crypto.randomBytes(size).toString('hex')
 
+const randomInt = (min, max) =>
+  new Promise((resolve, reject) => {
+    crypto.randomInt(min, max, (err, value) => {
+      if (err) {
+        return reject(err)
+      }
+
+      return resolve(value)
+    })
+  })
+
+const randomToken = () => randomInt(10 ** 5, 10 ** 6)
+
 module.exports = {
   randomString,
 
-  randomStringSync
+  randomStringSync,
+
+  randomInt,
+
+  randomToken
 }

@@ -1,6 +1,12 @@
 const {
+  getDateISO
+} = require('./timestamp')
+
+const {
   randomString,
-  randomStringSync
+  randomStringSync,
+  randomInt,
+  randomToken
 } = require('./random')
 
 const {
@@ -19,8 +25,11 @@ const {
 } = require('./user')
 
 module.exports = {
+  getDateISO,
   randomString,
   randomStringSync,
+  randomInt,
+  randomToken,
   checkAuth,
   existsKnex,
   getSalt,
