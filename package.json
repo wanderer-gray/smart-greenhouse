@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "watch": "npx nodemon --watch ./",
+    "start:backend": "node index.js",
+    "watch:backend": "npx nodemon --watch ./",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "meerkat",
