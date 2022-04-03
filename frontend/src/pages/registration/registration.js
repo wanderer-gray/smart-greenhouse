@@ -47,7 +47,7 @@ export default function Register(props) {
   };
 
   const ifEmptyOrValid = [
-    !validateEmail(state.email) && !!state.email,//ЭТО НЕ РАБОТАЕТ!!
+    !validateEmail(state.email) && !!state.email,
     !validatePassword(state.password) && !!state.password,
     state.password !== state.passwordConf && !!state.passwordConf,
     !state.name,
