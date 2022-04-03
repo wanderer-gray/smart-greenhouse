@@ -1,11 +1,6 @@
 const config = require('./config')[process.env.NODE_ENV ?? 'development']
 
-const fastify = require('fastify')({
-  logger: {
-    level: 'debug',
-    prettyPrint: true
-  }
-})
+const fastify = require('fastify')()
 
 fastify.register(require('fastify-oas'), {
   routePrefix: '/documentation',
