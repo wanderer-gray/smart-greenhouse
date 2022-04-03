@@ -7,12 +7,6 @@ const fastify = require('fastify')({
   }
 })
 
-fastify.decorate('config', config)
-
-fastify.decorate('utils', require('./utils'))
-
-fastify.decorate('knex', require('knex')(config.knex))
-
 fastify.register(require('fastify-oas'), {
   routePrefix: '/documentation',
   swagger: {
@@ -35,11 +29,28 @@ fastify.register(require('fastify-oas'), {
 
 fastify.register(require('fastify-cookie'), config.cookie)
 
+fastify.register(require('fastify-sensible'))
+
+fastify.decorate('config', config)
+
+fastify.decorate('utils', require('./utils'))
+
+fastify.decorate('knex', require('knex')(config.knex))
+
 fastify.register(require('./app'))
+
+fastify.ready((err) => {
+  if (err) {
+    fastify.log.error(`Error starting server: ${err}`)
+    process.exit(1)
+  }
+
+  fastify.oas()
+})
 
 fastify.listen(config.server, (err) => {
   if (err) {
     fastify.log.error(`Error starting server: ${err}`)
-    process.exit()
+    process.exit(1)
   }
 })

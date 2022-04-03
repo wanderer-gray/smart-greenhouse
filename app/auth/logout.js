@@ -4,7 +4,11 @@ module.exports = {
     tags: ['Auth'],
     summary: 'Выход'
   },
-  handler: function (_, reply) {
+  handler: function (request, reply) {
+    if (!this.utils.checkAuth(request)) {
+      throw this.httpErrors.notFound()
+    }
+
     reply
       .clearCookie('userId')
       .send()

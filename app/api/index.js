@@ -1,7 +1,11 @@
 module.exports = (app, _, done) => {
   app.log.debug('Mount "api"')
 
-  app.register(require('./health'), { prefix: '/health' })
+  app.addHook('onRequest', async function (request) {
+    if (!this.utils.checkAuth(request)) {
+      throw this.httpErrors.forbidden()
+    }
+  })
 
   done()
 }

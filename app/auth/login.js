@@ -6,16 +6,15 @@ module.exports = {
     body: {
       type: 'object',
       required: [
-        'nickname',
+        'email',
         'password'
       ],
       additionalProperties: false,
       properties: {
-        nickname: {
-          description: 'Ник',
+        email: {
+          description: 'Почта',
           type: 'string',
-          minLength: 8,
-          maxLength: 255
+          format: 'email'
         },
         password: {
           description: 'Пароль',
@@ -27,10 +26,14 @@ module.exports = {
     }
   },
   handler: async function (request, reply) {
-    const { nickname, password } = request.body
+    if (this.utils.checkAuth(request)) {
+      throw this.httpErrors.conflict()
+    }
+
+    const { email, password } = request.body
 
     const user = await this.knex('user')
-      .where({ nickname })
+      .where({ email })
       .first('userId', 'salt', 'hash')
 
     if (!user) {
