@@ -1,7 +1,7 @@
 module.exports = {
   schema: {
     description: 'Проверка почты на существование',
-    tags: ['Auth'],
+    tags: ['auth'],
     summary: 'Проверка почты',
     querystring: {
       type: 'object',

@@ -1,4 +1,4 @@
-module.exports = (app, _, done) => {
+module.exports = async function (app) {
   app.decorateRequest('userId', null)
 
   app.addHook('onRequest', async function (request, reply) {
@@ -19,7 +19,20 @@ module.exports = (app, _, done) => {
 
   app.register(require('./api'), { prefix: '/api' })
 
-  app.register(require('./health'), { prefix: '/health' })
+  const healthSchema = {
+    description: 'Проверка "здоровья"',
+    tags: ['other'],
+    summary: 'Проверка',
+    response: {
+      200: {
+        description: 'Текущая дата и время в формате ISO',
+        type: 'string',
+        format: 'date-time'
+      }
+    }
+  }
 
-  done()
+  app.get('/health', { schema: healthSchema }, () => {
+    return this.utils.getDateISO()
+  })
 }

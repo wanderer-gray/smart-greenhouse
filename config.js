@@ -1,13 +1,32 @@
-const { randomStringSync } = require('./utils')
+const name = 'smart-greenhouse'
+const host = '127.0.0.1'
+const port = 3080
 
 module.exports = {
   development: {
-    server: {
-      host: '127.0.0.1',
-      port: 3080
-    },
-    cookie: {
-      secret: randomStringSync(512)
+    name,
+    oas: {
+      routePrefix: '/documentation',
+      swagger: {
+        info: {
+          title: name,
+          description: 'ТюмГУ, ИВ, МЛР, 22 ИБАС 188',
+          version: '1.0.0'
+        },
+        schemes: ['http'],
+        consumes: ['application/json'],
+        produces: ['application/json'],
+        servers: [{
+          url: `http://${host}:${port}`,
+          description: 'Local server'
+        }],
+        tags: [
+          { name: 'auth', description: 'Аутентификация' },
+          { name: 'iot', description: 'Интернет вещей' },
+          { name: 'other', description: 'Другое' }
+        ]
+      },
+      exposeRoute: true
     },
     knex: {
       client: 'postgresql',
@@ -26,14 +45,12 @@ module.exports = {
         tableName: 'knex_migrations'
       }
     },
-    mailer: {
-      host: 'smtp.mail.ru',
-      port: 465,
-      secure: true,
-      auth: {
-        user: undefined,
-        pass: undefined
-      }
+    cookie: {
+      secret: 'test_secret'
+    },
+    server: {
+      host,
+      port
     }
   }
 }

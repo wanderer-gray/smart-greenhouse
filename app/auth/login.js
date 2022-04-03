@@ -1,7 +1,7 @@
 module.exports = {
   schema: {
     description: 'Вход в систему',
-    tags: ['Auth'],
+    tags: ['auth'],
     summary: 'Вход',
     body: {
       type: 'object',

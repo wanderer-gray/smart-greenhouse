@@ -3,7 +3,7 @@
 module.exports = {
   schema: {
     description: 'Отправка токена на почту для регистрации',
-    tags: ['Auth'],
+    tags: ['auth'],
     summary: 'Отправка токена для регистрации',
     querystring: {
       type: 'object',
@@ -44,7 +44,8 @@ module.exports = {
           createdAt
         })
 
-      this.sendMail({
+      this.mailer.sendMailNoWait({
+        from: '"smart-greenhouse"',
         to: email,
         subject: 'Register token',
         text: `Your token: "${token}"`

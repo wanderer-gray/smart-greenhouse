@@ -1,7 +1,7 @@
 module.exports = {
   schema: {
     description: 'Выйти из системы',
-    tags: ['Auth'],
+    tags: ['auth'],
     summary: 'Выход'
   },
   handler: function (request, reply) {
