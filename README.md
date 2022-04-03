@@ -15,4 +15,4 @@ Path: `smart-greenhouse-backend/config.js`
 
 ## OpenAPI
 - View: `host:port/documentation`
-- Example: `http://127.0.0.1/documentation`
+- Example: `http://127.0.0.1:3080/documentation`
