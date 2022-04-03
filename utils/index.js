@@ -20,8 +20,7 @@ const {
 const {
   getSalt,
   getHash,
-  checkHash,
-  existsUserByEmail
+  checkHash
 } = require('./user')
 
 module.exports = {
@@ -34,6 +33,5 @@ module.exports = {
   existsKnex,
   getSalt,
   getHash,
-  checkHash,
-  existsUserByEmail
+  checkHash
 }

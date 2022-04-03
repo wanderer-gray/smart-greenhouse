@@ -32,7 +32,7 @@ module.exports = async function (app) {
     }
   }
 
-  app.get('/health', { schema: healthSchema }, () => {
+  app.get('/health', { schema: healthSchema }, function () {
     return this.utils.getDateISO()
   })
 }

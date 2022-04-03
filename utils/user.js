@@ -1,7 +1,6 @@
 const crypto = require('crypto')
 
 const { randomString } = require('./random')
-const { existsKnex } = require('./knex')
 
 const getSalt = () => randomString(16)
 
@@ -18,19 +17,10 @@ const getHash = (password, salt) =>
 
 const checkHash = async (password, salt, hash) => await getHash(password, salt) === hash
 
-const existsUserByEmail = (email, knex) => {
-  const subQuery = knex('user')
-    .where({ email })
-
-  return existsKnex(subQuery, knex)
-}
-
 module.exports = {
   getSalt,
 
   getHash,
 
-  checkHash,
-
-  existsUserByEmail
+  checkHash
 }
