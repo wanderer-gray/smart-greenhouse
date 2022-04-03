@@ -1,0 +1,32 @@
+.title {
+    flex-grow: 1;
+  }
+  
+  .textRoot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: -webkit-fill-available;
+  }
+  
+  .body {
+    height: 100%;
+  }
+  
+  .elementsWidth {
+    width: 350px;
+    box-shadow: 0px 0px 30px gray;
+    transition: 0.2s ease;
+    border-radius: 10px;
+    padding: 25px;
+  }
+  
+  .saveButton {
+    margin-top: 15px;
+  }
+  
+  .navLink {
+    color: "white";
+    text-decoration: "none";
+  }
