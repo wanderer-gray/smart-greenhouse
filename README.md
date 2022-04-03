@@ -1,6 +1,3 @@
-# smart-greenhouse
-ТюмГУ, ИВ, МЛР, 22 ИБАС 188
-
 ## Launch
 - `git clone git@github.com:wanderer-gray/smart-greenhouse.git`
 - `cd smart-greenhouse`
