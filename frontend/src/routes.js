@@ -18,7 +18,7 @@ export const UserRoutes = ({ isAuthenticated }) => {
   return (
     <Switch>
       <Route exact path='/authorization' component={authorization} />
-      <Route exact path='/register' component={Register} />
+      <Route exact path='/registration' component={Register} />
       <Redirect to='/authorization' />
     </Switch>
   )

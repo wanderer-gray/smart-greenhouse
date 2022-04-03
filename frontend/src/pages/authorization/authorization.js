@@ -23,7 +23,7 @@ export default function Authorization(props) {
   const auth = useContext(AuthContext);
   const { loading, request, error, clearError } = useHttp();
   const [form, setForm] = useState({
-    login: '',
+    email: '',
     password: '',
   });
   const [open, setOpen] = useState(false);
@@ -47,7 +47,7 @@ export default function Authorization(props) {
   const authorizationHandler = async () => {
     try {
       const data = await request('/api/user/authorization', 'POST', { ...form });
-      auth.login(data.token, data.userLogin);
+      auth.email(data.token, data.email);
     }
     catch {
       setOpen(true);
@@ -63,12 +63,12 @@ export default function Authorization(props) {
         </Typography>
 
         <FormControl fullWidth={true} margin="dense">
-          <InputLabel htmlFor="login">Логин</InputLabel>
+          <InputLabel htmlFor="email">Email</InputLabel>
           <Input
             className="form_control"
             type="text"
-            id="login"
-            name="login"
+            id="email"
+            name="email"
             placeholder="Ваш логин"
             onChange={changeHandler}
           />
@@ -104,7 +104,7 @@ export default function Authorization(props) {
         </Snackbar>
 
         <div className="buttons">
-          <NavLink to='/register' style={navLinkStyle}>
+          <NavLink to='/registration' style={navLinkStyle}>
             <Button fullWidth={true}
               disabled={loading}
             >
