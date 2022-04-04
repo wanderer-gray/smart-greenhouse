@@ -1,5 +1,5 @@
 module.exports = async function (app) {
-  app.log.debug('Mount "auth"')
+  console.log('Mount "auth"')
 
   const {
     utils,
@@ -61,6 +61,22 @@ module.exports = async function (app) {
 
     return utils.existsKnex(subQuery, knex)
   }
+
+  const healthSchema = {
+    description: 'Проверка аутентификации',
+    tags: ['auth'],
+    summary: 'Проверка аутентификации',
+    response: {
+      200: {
+        description: 'Аутентифицирован ли пользователь',
+        type: 'boolean'
+      }
+    }
+  }
+
+  app.get('/checkAuth', { schema: healthSchema }, function (request) {
+    return utils.checkAuth(request)
+  })
 
   const existsEmailSchema = {
     description: 'Проверка почты на существование',
@@ -195,29 +211,29 @@ module.exports = async function (app) {
     summary: 'Восстановление',
     querystring: {
       type: 'object',
-      required: ['token'],
+      required: [
+        'email',
+        'token'
+      ],
       additionalProperties: false,
       properties: {
+        email: emailSchema,
         token: tokenSchema
       }
     },
     body: {
       type: 'object',
-      required: [
-        'email',
-        'password'
-      ],
+      required: ['password'],
       additionalProperties: false,
       properties: {
-        email: emailSchema,
         password: passwordSchema
       }
     }
   }
 
   app.put('/restore', { schema: restoreSchema }, async function (request, reply) {
-    const { token } = request.query
-    const { email, password } = request.body
+    const { email, token } = request.query
+    const { password } = request.body
 
     const userId = await knex.transaction(async (trx) => {
       await trx.raw('set transaction isolation level serializable')
@@ -302,29 +318,29 @@ module.exports = async function (app) {
     summary: 'Регистрация',
     querystring: {
       type: 'object',
-      required: ['token'],
+      required: [
+        'email',
+        'token'
+      ],
       additionalProperties: false,
       properties: {
+        email: emailSchema,
         token: tokenSchema
       }
     },
     body: {
       type: 'object',
-      required: [
-        'email',
-        'password'
-      ],
+      required: ['password'],
       additionalProperties: false,
       properties: {
-        email: emailSchema,
         password: passwordSchema
       }
     }
   }
 
   app.post('/register', { schema: registerSchema }, async function (request, reply) {
-    const { token } = request.query
-    const { email, password } = request.body
+    const { email, token } = request.query
+    const { password } = request.body
 
     const userId = await knex.transaction(async (trx) => {
       await trx.raw('set transaction isolation level serializable')

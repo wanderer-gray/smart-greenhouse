@@ -1,4 +1,8 @@
 module.exports = async function (app) {
+  console.log('Mount "app"')
+
+  const { utils } = app
+
   app.decorateRequest('userId', null)
 
   app.addHook('onRequest', async function (request, reply) {
@@ -33,6 +37,6 @@ module.exports = async function (app) {
   }
 
   app.get('/health', { schema: healthSchema }, function () {
-    return this.utils.getDateISO()
+    return utils.getDateISO()
   })
 }

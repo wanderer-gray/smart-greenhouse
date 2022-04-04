@@ -20,16 +20,18 @@ app.register(require('./app'))
 
 app.ready((err) => {
   if (err) {
-    app.log.error(`Error ready server: ${err}`)
+    console.error(`Server: Ready error - ${err}`)
     process.exit(1)
   }
 
   app.oas()
 })
 
-app.listen(config.server, (err) => {
+app.listen(config.server, (err, addr) => {
   if (err) {
-    app.log.error(`Error listen server: ${err}`)
+    console.error(`Server: Listen error - ${err}`)
     process.exit(1)
   }
+
+  console.info(`Server: Listen address - ${addr}`)
 })
