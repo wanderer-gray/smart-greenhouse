@@ -48,6 +48,9 @@ module.exports = {
     cookie: {
       secret: 'test_secret'
     },
+    tokenizer: {
+      secret: 'test_secret'
+    },
     server: {
       host,
       port

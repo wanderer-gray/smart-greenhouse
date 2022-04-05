@@ -6,8 +6,6 @@ app.decorate('config', config)
 
 app.decorate('utils', require('./utils'))
 
-app.register(require('./mailer'), config.mailer)
-
 app.register(require('fastify-oas'), config.oas)
 
 app.register(require('fastify-knexjs'), config.knex)
@@ -15,6 +13,10 @@ app.register(require('fastify-knexjs'), config.knex)
 app.register(require('fastify-cookie'), config.cookie)
 
 app.register(require('fastify-sensible'))
+
+app.register(require('./mailer'), config.mailer)
+
+app.register(require('./tokenizer'), config.tokenizer)
 
 app.register(require('./app'))
 

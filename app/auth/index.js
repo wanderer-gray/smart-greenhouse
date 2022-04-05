@@ -5,6 +5,7 @@ module.exports = async function (app) {
     utils,
     knex,
     mailer,
+    tokenizer,
     httpErrors
   } = app
 
@@ -21,9 +22,20 @@ module.exports = async function (app) {
   }
   const tokenSchema = {
     description: 'Токен',
+    type: 'string'
+  }
+  const codeSchema = {
+    description: 'Код',
     type: 'integer',
     minimum: 10 ** 5,
     maximum: 10 ** 6 - 1
+  }
+
+  const existsUserByEmail = (email, knex) => {
+    const subQuery = knex('user')
+      .where({ email })
+
+    return utils.existsKnex(subQuery, knex)
   }
 
   const setCookieUserId = (userId, reply) => {
@@ -34,32 +46,6 @@ module.exports = async function (app) {
         signed: 'true'
       })
       .send()
-  }
-
-  const existsUserByEmail = (email, knex) => {
-    const subQuery = knex('user')
-      .where({ email })
-
-    return utils.existsKnex(subQuery, knex)
-  }
-
-  const deleteTokenByEmail = (email, knex) => {
-    return knex('token')
-      .where({ email })
-      .del()
-  }
-
-  const checkTokenValid = (email, token, knex) => {
-    const now = utils.getDateISO()
-
-    const subQuery = knex('token')
-      .where({
-        email,
-        token
-      })
-      .where('createdAt', '>=', knex.raw('?::timestamp - interval \'5 minutes\'', [now]))
-
-    return utils.existsKnex(subQuery, knex)
   }
 
   const healthSchema = {
@@ -130,7 +116,7 @@ module.exports = async function (app) {
       .first('userId', 'salt', 'hash')
 
     if (!user) {
-      throw httpErrors.unauthorized()
+      throw httpErrors.notFound()
     }
 
     const { userId, salt, hash } = user
@@ -156,10 +142,10 @@ module.exports = async function (app) {
       .send()
   })
 
-  const sendRestoreTokenSchema = {
-    description: 'Отправка токена на почту для восстановления',
+  const sendRestoreCodeSchema = {
+    description: 'Отправка кода на почту для восстановления',
     tags: ['auth'],
-    summary: 'Отправка токена для восстановления',
+    summary: 'Отправка кода для восстановления',
     querystring: {
       type: 'object',
       required: ['email'],
@@ -167,42 +153,32 @@ module.exports = async function (app) {
       properties: {
         email: emailSchema
       }
+    },
+    response: {
+      200: tokenSchema
     }
   }
 
-  app.post('/sendRestoreToken', { schema: sendRestoreTokenSchema }, async function (request, reply) {
+  app.post('/sendRestoreCode', { schema: sendRestoreCodeSchema }, async function (request) {
     const { email } = request.query
 
-    await knex.transaction(async (trx) => {
-      await trx.raw('set transaction isolation level serializable')
+    const existsUser = await existsUserByEmail(email, knex)
 
-      const existsUser = await existsUserByEmail(email, trx)
+    if (!existsUser) {
+      throw httpErrors.notFound()
+    }
 
-      if (!existsUser) {
-        throw httpErrors.notFound()
-      }
+    const code = await utils.randomCode()
+    const token = await tokenizer.sign({ email }, code, { expiresIn: '5m' })
 
-      await deleteTokenByEmail(email, trx)
-
-      const token = await utils.randomToken()
-      const createdAt = utils.getDateISO()
-
-      await trx('token')
-        .insert({
-          email,
-          token,
-          createdAt
-        })
-
-      mailer.sendMailNoWait({
-        from: '"smart-greenhouse"',
-        to: email,
-        subject: 'Restore token',
-        text: `Your token: "${token}"`
-      })
+    mailer.sendMailNoWait({
+      from: '"smart-greenhouse"',
+      to: email,
+      subject: 'Restore code',
+      text: `Your code: "${code}"`
     })
 
-    reply.send()
+    return token
   })
 
   const restoreSchema = {
@@ -212,13 +188,13 @@ module.exports = async function (app) {
     querystring: {
       type: 'object',
       required: [
-        'email',
-        'token'
+        'token',
+        'code'
       ],
       additionalProperties: false,
       properties: {
-        email: emailSchema,
-        token: tokenSchema
+        token: tokenSchema,
+        code: codeSchema
       }
     },
     body: {
@@ -232,41 +208,28 @@ module.exports = async function (app) {
   }
 
   app.put('/restore', { schema: restoreSchema }, async function (request, reply) {
-    const { email, token } = request.query
+    const { token, code } = request.query
     const { password } = request.body
 
-    const userId = await knex.transaction(async (trx) => {
-      await trx.raw('set transaction isolation level serializable')
+    const { email } = await tokenizer.verify(token, code, httpErrors.forbidden())
+    const salt = await utils.getSalt()
+    const hash = await utils.getHash(password, salt)
 
-      const tokenValid = await checkTokenValid(email, token, trx)
-
-      if (!tokenValid) {
-        throw httpErrors.forbidden()
-      }
-
-      await deleteTokenByEmail(email, trx)
-
-      const salt = await utils.getSalt()
-      const hash = await utils.getHash(password, salt)
-
-      const [userId] = await trx('user')
-        .where({ email })
-        .update({
-          salt,
-          hash
-        })
-        .returning('userId')
-
-      return userId
-    })
+    const [userId] = await knex('user')
+      .where({ email })
+      .update({
+        salt,
+        hash
+      })
+      .returning('userId')
 
     setCookieUserId(userId, reply)
   })
 
-  const sendRegisterTokenSchema = {
-    description: 'Отправка токена на почту для регистрации',
+  const sendRegisterCodeSchema = {
+    description: 'Отправка кода на почту для регистрации',
     tags: ['auth'],
-    summary: 'Отправка токена для регистрации',
+    summary: 'Отправка кода для регистрации',
     querystring: {
       type: 'object',
       required: ['email'],
@@ -274,42 +237,32 @@ module.exports = async function (app) {
       properties: {
         email: emailSchema
       }
+    },
+    response: {
+      200: tokenSchema
     }
   }
 
-  app.post('/sendRegisterToken', { schema: sendRegisterTokenSchema }, async function (request, reply) {
+  app.post('/sendRegisterCode', { schema: sendRegisterCodeSchema }, async function (request, reply) {
     const { email } = request.query
 
-    await knex.transaction(async (trx) => {
-      await trx.raw('set transaction isolation level serializable')
+    const existsUser = await existsUserByEmail(email, knex)
 
-      const existsUser = await existsUserByEmail(email, trx)
+    if (existsUser) {
+      throw httpErrors.forbidden()
+    }
 
-      if (existsUser) {
-        throw httpErrors.forbidden()
-      }
+    const code = await utils.randomCode()
+    const token = await tokenizer.sign({ email }, code, { expiresIn: '5m' })
 
-      await deleteTokenByEmail(email, trx)
-
-      const token = await utils.randomToken()
-      const createdAt = utils.getDateISO()
-
-      await trx('token')
-        .insert({
-          email,
-          token,
-          createdAt
-        })
-
-      mailer.sendMailNoWait({
-        from: '"smart-greenhouse"',
-        to: email,
-        subject: 'Register token',
-        text: `Your token: "${token}"`
-      })
+    mailer.sendMailNoWait({
+      from: '"smart-greenhouse"',
+      to: email,
+      subject: 'Register code',
+      text: `Your code: "${code}"`
     })
 
-    reply.send()
+    return token
   })
 
   const registerSchema = {
@@ -319,13 +272,13 @@ module.exports = async function (app) {
     querystring: {
       type: 'object',
       required: [
-        'email',
-        'token'
+        'token',
+        'code'
       ],
       additionalProperties: false,
       properties: {
-        email: emailSchema,
-        token: tokenSchema
+        token: tokenSchema,
+        code: codeSchema
       }
     },
     body: {
@@ -339,33 +292,20 @@ module.exports = async function (app) {
   }
 
   app.post('/register', { schema: registerSchema }, async function (request, reply) {
-    const { email, token } = request.query
+    const { token, code } = request.query
     const { password } = request.body
 
-    const userId = await knex.transaction(async (trx) => {
-      await trx.raw('set transaction isolation level serializable')
+    const { email } = await tokenizer.verify(token, code, httpErrors.forbidden())
+    const salt = await utils.getSalt()
+    const hash = await utils.getHash(password, salt)
 
-      const tokenValid = await checkTokenValid(email, token, trx)
-
-      if (!tokenValid) {
-        throw httpErrors.forbidden()
-      }
-
-      await deleteTokenByEmail(email, trx)
-
-      const salt = await utils.getSalt()
-      const hash = await utils.getHash(password, salt)
-
-      const [userId] = await trx('user')
-        .insert({
-          email,
-          salt,
-          hash
-        })
-        .returning('userId')
-
-      return userId
-    })
+    const [userId] = await knex('user')
+      .insert({
+        email,
+        salt,
+        hash
+      })
+      .returning('userId')
 
     setCookieUserId(userId, reply)
   })
