@@ -3,7 +3,7 @@ module.exports = async function (app) {
 
   app.addHook('onRequest', async function (request) {
     if (!this.utils.checkAuth(request)) {
-      throw this.httpErrors.forbidden()
+      throw this.httpErrors.unauthorized()
     }
   })
 }
