@@ -1,15 +1,17 @@
-const name = 'smart-greenhouse'
 const host = '127.0.0.1'
 const port = 3080
 
 module.exports = {
   development: {
-    name,
+    sa: {
+      email: 'admin@smart-greenhouse.com',
+      password: '123456'
+    },
     oas: {
       routePrefix: '/documentation',
       swagger: {
         info: {
-          title: name,
+          title: 'smart-greenhouse',
           description: 'ТюмГУ, ИВ, МЛР, 22 ИБАС 188',
           version: '1.0.0'
         },
