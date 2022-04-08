@@ -18,7 +18,7 @@ module.exports = async function (app) {
   const passwordSchema = {
     description: 'Пароль',
     type: 'string',
-    minLength: 8,
+    minLength: 6,
     maxLength: 255
   }
   const tokenSchema = {
@@ -49,7 +49,7 @@ module.exports = async function (app) {
       .send()
   }
 
-  const checkAuthSchema = {
+  const checkSchema = {
     description: 'Проверка аутентификации',
     tags: ['auth'],
     summary: 'Проверка аутентификации',
@@ -61,7 +61,7 @@ module.exports = async function (app) {
     }
   }
 
-  app.get('/checkAuth', { schema: checkAuthSchema }, function (request) {
+  app.get('/check', { schema: checkSchema }, function (request) {
     return utils.checkAuth(request)
   })
 

@@ -1,19 +1,16 @@
-const { user } = require('../enums')
+const { user } = require('../enum')
 const { existsKnex } = require('./knex')
 
-const checkAuth = (request) => typeof request.userId === 'number'
-
-const isSA = (request, knex) => {
+const isSA = (userId, knex) => {
   const subQuery = knex('setting')
     .where({
       name: user.SA,
-      value: request.userId
+      value: userId
     })
 
   return existsKnex(subQuery, knex)
 }
 
 module.exports = {
-  checkAuth,
   isSA
 }

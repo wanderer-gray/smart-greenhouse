@@ -11,4 +11,6 @@ module.exports = async function (app) {
       throw httpErrors.unauthorized()
     }
   })
+
+  app.register(require('./iot'), { prefix: '/iot' })
 }

@@ -4,6 +4,8 @@ const config = require('./config')[process.env.NODE_ENV || 'development']
 
 app.decorate('config', config)
 
+app.decorate('enums', require('./enums'))
+
 app.decorate('utils', require('./utils'))
 
 app.register(require('fastify-oas'), config.oas)

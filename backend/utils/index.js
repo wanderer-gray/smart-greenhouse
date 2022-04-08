@@ -1,4 +1,9 @@
 const {
+  checkAuth,
+  isSA
+} = require('./request')
+
+const {
   getDateISO
 } = require('./timestamp')
 
@@ -8,10 +13,6 @@ const {
   randomString,
   randomStringSync
 } = require('./random')
-
-const {
-  checkAuth
-} = require('./request')
 
 const {
   existsKnex
@@ -24,12 +25,13 @@ const {
 } = require('./secret')
 
 module.exports = {
+  checkAuth,
+  isSA,
   getDateISO,
   randomInt,
   randomCode,
   randomString,
   randomStringSync,
-  checkAuth,
   existsKnex,
   getSalt,
   getHash,

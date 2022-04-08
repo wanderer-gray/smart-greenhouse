@@ -4,7 +4,7 @@ const {
     password
   }
 } = require('../config')[process.env.NODE_ENV || 'development']
-const { SA } = require('../enum')
+const { user } = require('../enum')
 const {
   getSalt,
   getHash
@@ -30,7 +30,7 @@ exports.seed = async (knex) => {
 
   await knex('setting')
     .insert({
-      name: SA,
+      name: user.SA,
       value: userId
     })
     .onConflict('name')
