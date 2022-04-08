@@ -12,7 +12,8 @@ module.exports = async function (app) {
   const emailSchema = {
     description: 'Почта',
     type: 'string',
-    format: 'email'
+    format: 'email',
+    maxLength: 255
   }
   const passwordSchema = {
     description: 'Пароль',
@@ -48,7 +49,7 @@ module.exports = async function (app) {
       .send()
   }
 
-  const healthSchema = {
+  const checkAuthSchema = {
     description: 'Проверка аутентификации',
     tags: ['auth'],
     summary: 'Проверка аутентификации',
@@ -60,7 +61,7 @@ module.exports = async function (app) {
     }
   }
 
-  app.get('/checkAuth', { schema: healthSchema }, function (request) {
+  app.get('/checkAuth', { schema: checkAuthSchema }, function (request) {
     return utils.checkAuth(request)
   })
 
