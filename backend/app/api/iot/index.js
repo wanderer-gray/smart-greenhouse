@@ -2,76 +2,18 @@ module.exports = async function (app) {
   console.log('Mount "iot"')
 
   const {
-    enums,
+    enums: {
+      iot: {
+        LIGHTING,
+        HUMIDITY,
+        TEMPERATURE
+      }
+    },
     utils,
+    schemas,
     knex,
     httpErrors
   } = app
-
-  const {
-    iot: {
-      LIGHTING,
-      HUMIDITY,
-      TEMPERATURE
-    }
-  } = enums
-
-  const iotIdSchema = {
-    description: 'Идентификатор устройства',
-    type: 'string',
-    format: 'uuid'
-  }
-  const iotTitleSchema = {
-    description: 'Название устройства',
-    type: 'string',
-    minLength: 0,
-    maxLength: 255
-  }
-  const iotTypeSchema = {
-    description: 'Тип устройства',
-    type: 'integer',
-    enum: Object.values(enums.iot)
-  }
-  const iotHelloSchema = {
-    description: 'Таймер обновления',
-    type: 'integer',
-    minimum: 1, // 1 sec
-    maximum: 30 * 60 // 30 min
-  }
-  const iotMinSchema = {
-    description: 'Критический показатель минимума',
-    type: 'integer'
-  }
-  const iotMaxSchema = {
-    description: 'Критический показатель максимума',
-    type: 'integer'
-  }
-  const iotUpdateSchema = {
-    title: iotTitleSchema,
-    hello: iotHelloSchema,
-    min: iotMinSchema,
-    max: iotMaxSchema
-  }
-  const iotCreateSchema = {
-    type: iotTypeSchema,
-    ...iotUpdateSchema
-  }
-  const iotResponseSchema = {
-    type: 'object',
-    required: [
-      'iotId',
-      'title',
-      'type',
-      'hello',
-      'min',
-      'max'
-    ],
-    additionalProperties: false,
-    properties: {
-      iotId: iotIdSchema,
-      ...iotCreateSchema
-    }
-  }
 
   const asserSetting = (type, min, max) => {
     switch (type) {
@@ -115,11 +57,10 @@ module.exports = async function (app) {
           ],
           additionalProperties: false,
           properties: {
-            type: iotTypeSchema,
+            type: schemas.iot.type,
             title: {
               description: 'Название типа',
-              type: 'string',
-              minLength: 1
+              type: 'string'
             }
           }
         }
@@ -144,14 +85,14 @@ module.exports = async function (app) {
       required: ['title'],
       additionalProperties: false,
       properties: {
-        title: iotTitleSchema
+        title: schemas.iot.title
       }
     },
     response: {
       200: {
         description: 'Устройства',
         type: 'array',
-        items: iotResponseSchema
+        items: schemas.iot.iot
       }
     }
   }
@@ -191,13 +132,16 @@ module.exports = async function (app) {
         'max'
       ],
       additionalProperties: false,
-      properties: iotCreateSchema
+      properties: {
+        type: schemas.iot.type,
+        title: schemas.iot.title,
+        hello: schemas.iot.hello,
+        min: schemas.iot.min,
+        max: schemas.iot.max
+      }
     },
     response: {
-      200: {
-        description: 'Созданное устройство',
-        ...iotResponseSchema
-      }
+      200: schemas.iot.iot
     }
   }
 
@@ -229,20 +173,27 @@ module.exports = async function (app) {
       required: ['iotId'],
       additionalProperties: false,
       properties: {
-        iotId: iotIdSchema
+        iotId: schemas.iot.iotId
       }
     },
     body: {
       type: 'object',
-      minProperties: 1,
+      required: [
+        'title',
+        'hello',
+        'min',
+        'max'
+      ],
       additionalProperties: false,
-      properties: iotUpdateSchema
+      properties: {
+        title: schemas.iot.title,
+        hello: schemas.iot.hello,
+        min: schemas.iot.min,
+        max: schemas.iot.max
+      }
     },
     response: {
-      200: {
-        description: 'Обновлённое устройство',
-        ...iotResponseSchema
-      }
+      200: schemas.iot.iot
     }
   }
 
@@ -274,7 +225,7 @@ module.exports = async function (app) {
       required: ['iotId'],
       additionalProperties: false,
       properties: {
-        iotId: iotIdSchema
+        iotId: schemas.iot.iotId
       }
     }
   }
@@ -300,7 +251,7 @@ module.exports = async function (app) {
       required: ['iotId'],
       additionalProperties: false,
       properties: {
-        iotId: iotIdSchema
+        iotId: schemas.iot.iotId
       }
     }
   }
@@ -325,7 +276,7 @@ module.exports = async function (app) {
       required: ['iotId'],
       additionalProperties: false,
       properties: {
-        iotId: iotIdSchema
+        iotId: schemas.iot.iotId
       }
     }
   }

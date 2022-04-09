@@ -13,4 +13,6 @@ module.exports = async function (app) {
   })
 
   app.register(require('./iot'), { prefix: '/iot' })
+
+  app.register(require('./group'), { prefix: '/group' })
 }

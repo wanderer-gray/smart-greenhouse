@@ -23,6 +23,8 @@ module.exports = async function (app) {
 
   app.register(require('./api'), { prefix: '/api' })
 
+  app.register(require('./metric'), { prefix: '/metric' })
+
   const healthSchema = {
     description: 'Проверка "здоровья"',
     tags: ['other'],

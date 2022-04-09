@@ -26,6 +26,7 @@ module.exports = {
           { name: 'auth', description: 'Аутентификация' },
           { name: 'iot', description: 'Интернет вещей' },
           { name: 'group', description: 'Группы интернет вещей' },
+          { name: 'metric', description: 'Метрики интернет вещей' },
           { name: 'other', description: 'Другое' }
         ]
       },

@@ -3,24 +3,18 @@
  * @returns { Promise<void> }
  */
 exports.up = (knex) =>
-  knex.schema.createTable('group_iot', (table) => {
-    table.integer('groupId').notNullable().primary()
+  knex.schema.createTable('metric', (table) => {
+    table.increments('metricId').primary()
     table.uuid('iotId').notNullable()
+    table.integer('value').notNullable()
+    table.timestamp('createAt', { useTz: false }).notNullable()
 
-    table
-      .foreign('groupId')
-      .references('groupId')
-      .inTable('group')
-      .onUpdate('CASCADE')
-      .onDelete('CASCADE')
     table
       .foreign('iotId')
       .references('iotId')
       .inTable('iot')
       .onUpdate('CASCADE')
       .onDelete('CASCADE')
-
-    table.unique(['iotId', 'groupId'])
   })
 
 /**
@@ -28,4 +22,4 @@ exports.up = (knex) =>
 * @returns { Promise<void> }
 */
 exports.down = (knex) =>
-  knex.schema.dropTable('group_iot')
+  knex.schema.dropTable('metric')

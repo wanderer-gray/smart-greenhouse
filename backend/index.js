@@ -8,6 +8,8 @@ app.decorate('enums', require('./enums'))
 
 app.decorate('utils', require('./utils'))
 
+app.decorate('schemas', require('./schemas'))
+
 app.register(require('fastify-oas'), config.oas)
 
 app.register(require('fastify-knexjs'), config.knex)

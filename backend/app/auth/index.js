@@ -3,34 +3,12 @@ module.exports = async function (app) {
 
   const {
     utils,
+    schemas,
     knex,
     mailer,
     tokenizer,
     httpErrors
   } = app
-
-  const emailSchema = {
-    description: 'Почта',
-    type: 'string',
-    format: 'email',
-    maxLength: 255
-  }
-  const passwordSchema = {
-    description: 'Пароль',
-    type: 'string',
-    minLength: 6,
-    maxLength: 255
-  }
-  const tokenSchema = {
-    description: 'Токен',
-    type: 'string'
-  }
-  const codeSchema = {
-    description: 'Код',
-    type: 'integer',
-    minimum: 10 ** 5,
-    maximum: 10 ** 6 - 1
-  }
 
   const existsUserByEmail = (email, knex) => {
     const subQuery = knex('user')
@@ -74,7 +52,7 @@ module.exports = async function (app) {
       required: ['email'],
       additionalProperties: false,
       properties: {
-        email: emailSchema
+        email: schemas.user.email
       }
     },
     response: {
@@ -103,8 +81,8 @@ module.exports = async function (app) {
       ],
       additionalProperties: false,
       properties: {
-        email: emailSchema,
-        password: passwordSchema
+        email: schemas.user.email,
+        password: schemas.user.password
       }
     }
   }
@@ -152,11 +130,11 @@ module.exports = async function (app) {
       required: ['email'],
       additionalProperties: false,
       properties: {
-        email: emailSchema
+        email: schemas.user.email
       }
     },
     response: {
-      200: tokenSchema
+      200: schemas.auth.token
     }
   }
 
@@ -189,13 +167,13 @@ module.exports = async function (app) {
     querystring: {
       type: 'object',
       required: [
-        'token',
-        'code'
+        'code',
+        'token'
       ],
       additionalProperties: false,
       properties: {
-        token: tokenSchema,
-        code: codeSchema
+        code: schemas.auth.code,
+        token: schemas.auth.token
       }
     },
     body: {
@@ -203,13 +181,13 @@ module.exports = async function (app) {
       required: ['password'],
       additionalProperties: false,
       properties: {
-        password: passwordSchema
+        password: schemas.user.password
       }
     }
   }
 
   app.put('/restore', { schema: restoreSchema }, async function (request, reply) {
-    const { token, code } = request.query
+    const { code, token } = request.query
     const { password } = request.body
 
     const { email } = await tokenizer.verify(token, code, httpErrors.forbidden())
@@ -236,11 +214,11 @@ module.exports = async function (app) {
       required: ['email'],
       additionalProperties: false,
       properties: {
-        email: emailSchema
+        email: schemas.user.email
       }
     },
     response: {
-      200: tokenSchema
+      200: schemas.auth.token
     }
   }
 
@@ -273,13 +251,13 @@ module.exports = async function (app) {
     querystring: {
       type: 'object',
       required: [
-        'token',
-        'code'
+        'code',
+        'token'
       ],
       additionalProperties: false,
       properties: {
-        token: tokenSchema,
-        code: codeSchema
+        code: schemas.auth.code,
+        token: schemas.auth.token
       }
     },
     body: {
@@ -287,13 +265,13 @@ module.exports = async function (app) {
       required: ['password'],
       additionalProperties: false,
       properties: {
-        password: passwordSchema
+        password: schemas.user.password
       }
     }
   }
 
   app.post('/register', { schema: registerSchema }, async function (request, reply) {
-    const { token, code } = request.query
+    const { code, token } = request.query
     const { password } = request.body
 
     const { email } = await tokenizer.verify(token, code, httpErrors.forbidden())
