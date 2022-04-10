@@ -12,8 +12,7 @@ export default function Auth ({ children }) {
   const [auth, setAuth] = useState(false)
 
   const check = useCallback(async () => {
-    const auth = await AuthAPI
-      .check()
+    const auth = await AuthAPI.check()
       .catch(() => {
         nofity({ type: 'error', text: 'Не удалось проверить состояние аутентификации' })
 
