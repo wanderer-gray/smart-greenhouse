@@ -1,27 +1,20 @@
-import { BrowserRouter as Router } from 'react-router-dom';
-import { UserRoutes } from './routes';
-import { useAuth } from './hooks/authHook';
-import { AuthContext } from './context/AuthContext';
-import { Loader } from './components/loader/loader';
 
-import './App.scss';
+import React from 'react'
+import Nofity from './Nofity'
+import Http from './Http'
+import Api from './Api'
+import Auth from './Auth'
 
-function App() {
-  const { token, login, logout, userLogin, ready } = useAuth();
-  const isAuthenticated = !!token;
-
-  if (!ready) {
-    <Loader />
-  }
+function App () {
   return (
-    <AuthContext.Provider value={{ token, login, logout, userLogin }}>
-      <Router>
-        <div className="App">
-          <UserRoutes isAuthenticated={isAuthenticated} />
-        </div>
-      </Router>
-    </AuthContext.Provider>
-  );
+    <Nofity>
+      <Http>
+        <Api>
+          <Auth />
+        </Api>
+      </Http>
+    </Nofity>
+  )
 }
 
-export default App;
+export default App

@@ -3,6 +3,11 @@ module.exports = {
     browser: true,
     es2021: true
   },
+  globals: {
+    http: true,
+    nofity: true,
+    AuthAPI: true
+  },
   extends: [
     'plugin:react/recommended',
     'standard'
