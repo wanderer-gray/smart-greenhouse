@@ -1,5 +1,5 @@
 module.exports = async function (app) {
-  console.log('Mount "metric"')
+  console.log('Mount "iot_metric"')
 
   const {
     enums: {
@@ -40,7 +40,7 @@ module.exports = async function (app) {
 
   const addSchema = {
     description: 'Добавление метрики от умного устройства',
-    tags: ['iot', 'metric'],
+    tags: ['metric'],
     summary: 'Добавление метрики',
     querystring: {
       type: 'object',
@@ -101,7 +101,10 @@ module.exports = async function (app) {
         const subject = value < min
           ? 'Критический показатель минимума'
           : 'Критический показатель максимума'
-        const text = `Прибор: "${title}"; значение: ${value}`
+        const text = [
+          `Устройство: "${title}"`,
+          `Значение: "${value}"`
+        ].join('\n')
 
         await trx('event')
           .insert({
@@ -113,8 +116,8 @@ module.exports = async function (app) {
           .whereExists((builder) => {
             builder
               .from('iot_owner')
-              .where({ iotId })
               .where('userId', trx.ref('user.userId'))
+              .where({ iotId })
           })
           .first('email')
 

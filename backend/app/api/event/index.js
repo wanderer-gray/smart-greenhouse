@@ -1,5 +1,5 @@
 module.exports = async function (app) {
-  console.log('Mount "api_metric"')
+  console.log('Mount "event"')
 
   const {
     utils,
@@ -9,9 +9,9 @@ module.exports = async function (app) {
   } = app
 
   const iotSearchSchema = {
-    description: 'Поиск метрик умного устройства',
-    tags: ['iot', 'metric'],
-    summary: 'Поиск метрик устройства',
+    description: 'Поиск событий умного устройства',
+    tags: ['iot', 'event'],
+    summary: 'Поиск событий устройства',
     querystring: {
       type: 'object',
       required: [
@@ -28,17 +28,19 @@ module.exports = async function (app) {
     },
     response: {
       200: {
-        description: 'Метрики умного устройства',
+        description: 'События умного устройства',
         type: 'array',
         items: {
           type: 'object',
           required: [
-            'value',
+            'subject',
+            'text',
             'createAt'
           ],
           additionalProperties: false,
           properties: {
-            value: schemas.metric.value,
+            subject: schemas.event.subject,
+            text: schemas.event.text,
             createAt: schemas.metric.createAt
           }
         }
@@ -62,18 +64,28 @@ module.exports = async function (app) {
       throw httpErrors.forbidden()
     }
 
-    return knex('metric')
-      .where({ iotId })
-      .where('createAt', '>=', begin)
-      .where('createAt', '<=', end)
-      .select('value', 'createAt')
+    const createAt = knex('metric')
+      .where('metricId', knex.ref('event.metricId'))
+      .select('createAt')
+
+    return knex('event')
+      .whereExists((builder) => {
+        builder
+          .from('metric')
+          .where('metricId', knex.ref('event.metricId'))
+          .where({ iotId })
+          .where('createAt', '>=', begin)
+          .where('createAt', '<=', end)
+      })
+      .select('subject', 'text')
+      .select({ createAt })
       .orderBy('createAt')
   })
 
   const groupSearchSchema = {
-    description: 'Поиск метрик группы умных устройств',
-    tags: ['group', 'metric'],
-    summary: 'Поиск метрик группы',
+    description: 'Поиск событий группы умных устройств',
+    tags: ['group', 'event'],
+    summary: 'Поиск событий группы',
     querystring: {
       type: 'object',
       required: [
@@ -90,31 +102,33 @@ module.exports = async function (app) {
     },
     response: {
       200: {
-        description: 'Метрики группы умных устройств',
+        description: 'События группы умных устройств',
         type: 'object',
         required: [
           'iotId',
           'title',
           'type',
-          'metrics'
+          'events'
         ],
         additionalProperties: false,
         properties: {
           iotId: schemas.iot.iotId,
           title: schemas.iot.title,
           type: schemas.iot.type,
-          metrics: {
-            description: 'Метрики умного устройства',
+          events: {
+            description: 'События умного устройства',
             type: 'array',
             items: {
               type: 'object',
               required: [
-                'value',
+                'subject',
+                'text',
                 'createAt'
               ],
               additionalProperties: false,
               properties: {
-                value: schemas.metric.value,
+                subject: schemas.event.subject,
+                text: schemas.event.text,
                 createAt: schemas.metric.createAt
               }
             }
@@ -139,16 +153,25 @@ module.exports = async function (app) {
     if (!access) {
       throw httpErrors.forbidden()
     }
+    const createAt = knex('metric')
+      .where('metricId', knex.ref('event.metricId'))
+      .select('createAt')
 
-    const metric = knex('metric')
-      .where('iotId', knex.ref('iot.iotId'))
-      .where('createAt', '>=', begin)
-      .where('createAt', '<=', end)
-      .select('value', 'createAt')
+    const event = knex('event')
+      .whereExists((builder) => {
+        builder
+          .from('metric')
+          .where('metricId', knex.ref('event.metricId'))
+          .where('iotId', knex.ref('iot.iotId'))
+          .where('createAt', '>=', begin)
+          .where('createAt', '<=', end)
+      })
+      .select('subject', 'text')
+      .select({ createAt })
       .orderBy('createAt')
 
-    const metrics = knex({ metric })
-      .select(knex.raw('coalesce(jsonb_agg(metric), \'[]\'::jsonb)'))
+    const events = knex({ event })
+      .select(knex.raw('coalesce(jsonb_agg(event), \'[]\'::jsonb)'))
 
     return knex('iot')
       .whereExists((builder) => {
@@ -158,7 +181,7 @@ module.exports = async function (app) {
           .where({ groupId })
       })
       .select('iotId', 'title', 'type')
-      .select({ metrics })
+      .select({ events })
       .orderBy('title')
   })
 }

@@ -27,6 +27,7 @@ module.exports = {
           { name: 'iot', description: 'Интернет вещей' },
           { name: 'group', description: 'Группы интернет вещей' },
           { name: 'metric', description: 'Метрики интернет вещей' },
+          { name: 'event', description: 'События интернет вещей' },
           { name: 'other', description: 'Другое' }
         ]
       },
