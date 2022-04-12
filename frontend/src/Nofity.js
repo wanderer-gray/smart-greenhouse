@@ -1,69 +1,41 @@
-import React, { Component, Fragment } from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { Snackbar, Alert } from '@mui/material'
+import {
+  SnackbarProvider,
+  withSnackbar
+} from 'notistack'
 
-export default class Nofity extends Component {
+class Nofity extends Component {
   constructor (props) {
     super(props)
 
-    this.state = {
-      queue: []
-    }
-
-    window.nofity = ({ type, text }) => {
-      this.setState((state) => {
-        const key = `${Date.now()}:${Math.random()}`
-
-        const queue = [...state.queue, { type, text, key }]
-
-        return { queue }
-      })
-    }
-  }
-
-  handleClose (key) {
-    this.setState((state) => {
-      const queue = state.queue.filter((nofity) => nofity.key !== key)
-
-      return { queue }
+    window.nofity = ({ message, variant }) => props.enqueueSnackbar(message, {
+      variant
     })
   }
 
-  get nofity () {
-    const nofity = this.state.queue[0]
-
-    if (!nofity) {
-      return null
-    }
-
-    const { key, type, text } = nofity
-
-    setTimeout(() => this.handleClose(key), 5 * 1000)
-
-    return (
-      <Snackbar open={true}>
-        <Alert
-          severity={type}
-          elevation={6}
-          onClose={() => this.handleClose(key)}
-        >
-          {text}
-        </Alert>
-      </Snackbar>
-    )
-  }
-
   render () {
-    return (
-      <Fragment>
-        {this.nofity}
-
-        {this.props.children}
-      </Fragment>
-    )
+    return this.props.children
   }
 }
 
 Nofity.propTypes = {
+  children: PropTypes.node,
+  enqueueSnackbar: PropTypes.func
+}
+
+const NofityWrapper = withSnackbar(Nofity)
+
+export default function NofityProvider ({ children }) {
+  return (
+    <SnackbarProvider maxSnack={3}>
+      <NofityWrapper>
+        {children}
+      </NofityWrapper>
+    </SnackbarProvider>
+  )
+}
+
+NofityProvider.propTypes = {
   children: PropTypes.node
 }

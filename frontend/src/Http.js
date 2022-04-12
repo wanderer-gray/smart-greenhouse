@@ -51,15 +51,15 @@ export class HttpBuilder {
 
   _getOptions () {
     const options = {
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8'
-      },
       method: this._method
     }
 
     const body = this._body
 
     if (body) {
+      options.headers = {
+        'Content-Type': 'application/json;charset=utf-8'
+      }
       options.body = JSON.stringify(body)
     }
 
@@ -76,16 +76,26 @@ export class HttpBuilder {
           throw new HttpError(response.status, response.statusText)
         }
 
-        return response.json()
+        return response.text()
+      })
+      .then((response) => {
+        try {
+          return JSON.parse(response)
+        } catch {
+          return response
+        }
       })
   }
 
-  then () {
+  then (resolve, reject) {
     return this._request()
+      .then(resolve)
+      .catch(reject)
   }
 
-  catch () {
+  catch (reject) {
     return this._request()
+      .catch(reject)
   }
 }
 

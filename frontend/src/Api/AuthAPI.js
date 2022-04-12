@@ -1,6 +1,3 @@
-import { Component } from 'react'
-import PropTypes from 'prop-types'
-
 export const AuthAPI = {
   check: () =>
     http('auth/check')
@@ -50,20 +47,4 @@ export const AuthAPI = {
         code
       })
       .body({ password })
-}
-
-export default class Api extends Component {
-  constructor (props) {
-    super(props)
-
-    window.AuthAPI = AuthAPI
-  }
-
-  render () {
-    return this.props.children
-  }
-}
-
-Api.propTypes = {
-  children: PropTypes.node
 }
