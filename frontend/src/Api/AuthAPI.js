@@ -17,7 +17,7 @@ export const AuthAPI = {
       }),
 
   logout: () =>
-    http('auth/login')
+    http('auth/logout')
       .method('delete'),
 
   sendRestoreCode: (email) =>
