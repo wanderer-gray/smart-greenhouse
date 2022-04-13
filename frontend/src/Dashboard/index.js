@@ -1,4 +1,10 @@
-import React, { useState } from 'react'
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useEffect
+} from 'react'
 import { useAuth } from '../Auth'
 import {
   Paper,
@@ -7,6 +13,13 @@ import {
   Button
 } from '@mui/material'
 import { styled } from '@mui/system'
+import Iots from './Iots'
+
+const DashboardContext = createContext()
+
+export function useDashboard () {
+  return useContext(DashboardContext)
+}
 
 const DivSpaceBetween = styled('div')({
   display: 'flex',
@@ -18,6 +31,26 @@ export default function Dashboard () {
   const auth = useAuth()
 
   const [page, setPage] = useState('iots')
+  const [iotTypes, setIotTypes] = useState([])
+
+  const loadIotTypes = useCallback(async () => {
+    try {
+      const types = await IotsAPI.types()
+
+      const iotTypes = Object.fromEntries(
+        types.map((type) => [type.type, type])
+      )
+
+      setIotTypes(iotTypes)
+    } catch {
+      nofity({
+        variant: 'error',
+        message: 'Не удалось получить типы устройств'
+      })
+    }
+  })
+
+  useEffect(loadIotTypes, [])
 
   return (
     <Paper
@@ -46,11 +79,18 @@ export default function Dashboard () {
           />
         </Tabs>
 
-        <Button onClick={auth.logout}>
+        <Button
+          color={'error'}
+          variant={'outlined'}
+          onClick={auth.logout}
+        >
           Выйти
         </Button>
       </DivSpaceBetween>
 
+      <DashboardContext.Provider value={{ iotTypes }}>
+        {page === 'iots' && <Iots />}
+      </DashboardContext.Provider>
     </Paper>
   )
 }

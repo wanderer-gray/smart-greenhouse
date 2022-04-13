@@ -21,7 +21,7 @@ function RestoreFirstStep ({ email, setEmail, sendRestoreCode }) {
         type={'email'}
         size={'small'}
         fullWidth={true}
-        placeholder={'Email'}
+        placeholder={'Почта'}
         value={email}
         onChange={(event) => setEmail(event.target.value)}
       />

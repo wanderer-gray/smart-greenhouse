@@ -53,7 +53,7 @@ export default function LogIn ({ checkAuth }) {
         type={'email'}
         size={'small'}
         fullWidth={true}
-        placeholder={'Email'}
+        placeholder={'Почта'}
         value={email}
         onChange={(event) => setEmail(event.target.value)}
       />
@@ -62,7 +62,7 @@ export default function LogIn ({ checkAuth }) {
         type={'password'}
         size={'small'}
         fullWidth={true}
-        placeholder={'Password'}
+        placeholder={'Пароль'}
         value={password}
         onChange={(event) => setPassword(event.target.value)}
       />

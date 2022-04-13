@@ -6,7 +6,8 @@ module.exports = {
   globals: {
     http: true,
     nofity: true,
-    AuthAPI: true
+    AuthAPI: true,
+    IotsAPI: true
   },
   extends: [
     'plugin:react/recommended',

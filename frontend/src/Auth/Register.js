@@ -21,7 +21,7 @@ function RegisterFirstStep ({ email, setEmail, sendRegisterCode }) {
         type={'email'}
         size={'small'}
         fullWidth={true}
-        placeholder={'Email'}
+        placeholder={'Почта'}
         value={email}
         onChange={(event) => setEmail(event.target.value)}
       />
