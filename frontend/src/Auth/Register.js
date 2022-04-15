@@ -84,7 +84,7 @@ RegisterSecondStep.propTypes = {
   register: PropTypes.func
 }
 
-export default function Register ({ checkAuth }) {
+export default function Register ({ OnRegister }) {
   const history = useHistory()
 
   const [email, setEmail] = useState('')
@@ -97,9 +97,11 @@ export default function Register ({ checkAuth }) {
 
   const sendRegisterCode = useCallback(async () => {
     try {
-      const exists = await AuthAPI.existsEmail(email)
+      const token = await AuthAPI.sendRegisterCode(email)
 
-      if (exists) {
+      setToken(token)
+    } catch (err) {
+      if (err.status === 403) {
         nofity({
           variant: 'warning',
           message: 'Данная почта уже занята'
@@ -107,20 +109,7 @@ export default function Register ({ checkAuth }) {
 
         return
       }
-    } catch {
-      nofity({
-        variant: 'error',
-        message: 'Не удалось проверить почту на существование'
-      })
 
-      return
-    }
-
-    try {
-      const token = await AuthAPI.sendRegisterCode(email)
-
-      setToken(token)
-    } catch {
       nofity({
         variant: 'error',
         message: 'Не удалось отправить код на почту'
@@ -138,7 +127,7 @@ export default function Register ({ checkAuth }) {
       })
     }
 
-    return checkAuth()
+    OnRegister()
   })
 
   return (
@@ -193,5 +182,5 @@ export default function Register ({ checkAuth }) {
 }
 
 Register.propTypes = {
-  checkAuth: PropTypes.func
+  OnRegister: PropTypes.func.isRequired
 }

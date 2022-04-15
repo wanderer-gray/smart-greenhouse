@@ -27,46 +27,48 @@ module.exports = async function (app) {
       .send()
   }
 
-  const checkSchema = {
-    description: 'Проверка аутентификации',
+  const initSchema = {
+    description: 'Состояние аутентификации и авторизации',
     tags: ['auth'],
-    summary: 'Проверка аутентификации',
+    summary: 'Состояние аутентификации и авторизации',
     response: {
       200: {
-        description: 'Аутентифицирован ли пользователь',
-        type: 'boolean'
+        description: 'Состояние',
+        type: 'object',
+        required: ['isAuth'],
+        additionalProperties: false,
+        properties: {
+          isAuth: schemas.auth.isAuth,
+          right: schemas.auth.right
+        }
       }
     }
   }
 
-  app.get('/check', { schema: checkSchema }, function (request) {
-    return utils.checkAuth(request)
-  })
+  app.get('/init', { schema: initSchema }, async function (request) {
+    const { userId } = request
 
-  const existsEmailSchema = {
-    description: 'Проверка почты на существование',
-    tags: ['auth'],
-    summary: 'Проверка почты',
-    querystring: {
-      type: 'object',
-      required: ['email'],
-      additionalProperties: false,
-      properties: {
-        email: schemas.user.email
-      }
-    },
-    response: {
-      200: {
-        description: 'Почта существует',
-        type: 'boolean'
-      }
+    const isAuth = utils.checkAuth(request)
+
+    if (!isAuth) {
+      return { isAuth }
     }
-  }
 
-  app.get('/existsEmail', { schema: existsEmailSchema }, function (request) {
-    const { email } = request.query
+    const right = []
 
-    return existsUserByEmail(email, knex)
+    const sa = await utils.isSA(userId, knex)
+
+    if (sa) {
+      right.push({
+        object: 'iot',
+        action: 'create'
+      })
+    }
+
+    return {
+      isAuth,
+      right
+    }
   })
 
   const loginSchema = {

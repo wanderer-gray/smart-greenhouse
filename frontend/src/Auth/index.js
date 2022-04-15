@@ -2,6 +2,7 @@ import React, {
   createContext,
   useContext,
   useState,
+  useMemo,
   useCallback,
   useEffect
 } from 'react'
@@ -23,24 +24,24 @@ export function useAuth () {
 }
 
 export default function Auth ({ children }) {
-  const [ready, setReady] = useState(false)
-  const [isAuth, setIsAuth] = useState(false)
+  const [auth, setAuth] = useState(null)
 
-  const check = useCallback(async () => {
+  const isAuth = useMemo(() => auth?.isAuth ?? false, [auth])
+  const right = useMemo(() => auth?.right ?? [], [auth])
+
+  const init = useCallback(async () => {
     try {
-      const auth = await AuthAPI.check()
+      const auth = await AuthAPI.init()
 
-      setIsAuth(auth)
+      setAuth(auth)
     } catch {
       nofity({
         variant: 'error',
         message: 'Не удалось проверить состояние аутентификации'
       })
 
-      setIsAuth(false)
+      setAuth(null)
     }
-
-    setReady(true)
   })
 
   const logout = useCallback(async () => {
@@ -53,18 +54,18 @@ export default function Auth ({ children }) {
       })
     }
 
-    return check()
+    init()
   })
 
   useEffect(() => {
-    check()
+    init()
 
-    const checker = setInterval(check, 30 * 1000)
+    const checker = setInterval(init, 30 * 1000)
 
     return () => clearInterval(checker)
-  })
+  }, [])
 
-  if (!ready) {
+  if (auth === null) {
     return 'Загрузка...'
   }
 
@@ -73,13 +74,13 @@ export default function Auth ({ children }) {
       <Router>
         <Switch>
           <Route path={'/login'}>
-            <LogIn checkAuth={check} />
+            <LogIn OnLogin={init} />
           </Route>
           <Route path={'/register'}>
-            <Register checkAuth={check} />
+            <Register OnRegister={init} />
           </Route>
           <Route path={'/restore'}>
-            <Restore checkAuth={check} />
+            <Restore OnRestore={init} />
           </Route>
 
           <Redirect to={'/login'} />
@@ -89,7 +90,7 @@ export default function Auth ({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ logout }}>
+    <AuthContext.Provider value={{ right, logout }}>
       {children}
     </AuthContext.Provider>
   )

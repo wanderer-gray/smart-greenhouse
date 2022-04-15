@@ -1,12 +1,7 @@
 export const AuthAPI = {
-  check: () =>
-    http('auth/check')
+  init: () =>
+    http('auth/init')
       .method('get'),
-
-  existsEmail: (email) =>
-    http('auth/existsEmail')
-      .method('get')
-      .query({ email }),
 
   login: (email, password) =>
     http('auth/login')

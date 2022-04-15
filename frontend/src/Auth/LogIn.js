@@ -12,7 +12,7 @@ import {
   ButtonGroup
 } from '@mui/material'
 
-export default function LogIn ({ checkAuth }) {
+export default function LogIn ({ OnLogin }) {
   const history = useHistory()
 
   const [email, setEmail] = useState('')
@@ -28,7 +28,7 @@ export default function LogIn ({ checkAuth }) {
       })
     }
 
-    return checkAuth()
+    OnLogin()
   })
 
   return (
@@ -93,5 +93,5 @@ export default function LogIn ({ checkAuth }) {
 }
 
 LogIn.propTypes = {
-  checkAuth: PropTypes.func
+  OnLogin: PropTypes.func.isRequired
 }

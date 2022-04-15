@@ -84,7 +84,7 @@ RestoreSecondStep.propTypes = {
   restore: PropTypes.func
 }
 
-export default function Restore ({ checkAuth }) {
+export default function Restore ({ OnRestore }) {
   const history = useHistory()
 
   const [email, setEmail] = useState('')
@@ -97,9 +97,11 @@ export default function Restore ({ checkAuth }) {
 
   const sendRestoreCode = useCallback(async () => {
     try {
-      const exists = await AuthAPI.existsEmail(email)
+      const token = await AuthAPI.sendRestoreCode(email)
 
-      if (!exists) {
+      setToken(token)
+    } catch (err) {
+      if (err.status === 404) {
         nofity({
           variant: 'warning',
           message: 'Данная почта не найдена'
@@ -107,20 +109,7 @@ export default function Restore ({ checkAuth }) {
 
         return
       }
-    } catch {
-      nofity({
-        variant: 'error',
-        message: 'Не удалось проверить почту на существование'
-      })
 
-      return
-    }
-
-    try {
-      const token = await AuthAPI.sendRestoreCode(email)
-
-      setToken(token)
-    } catch {
       nofity({
         variant: 'error',
         message: 'Не удалось отправить код на почту'
@@ -138,7 +127,7 @@ export default function Restore ({ checkAuth }) {
       })
     }
 
-    return checkAuth()
+    OnRestore()
   })
 
   return (
@@ -193,5 +182,5 @@ export default function Restore ({ checkAuth }) {
 }
 
 Restore.propTypes = {
-  checkAuth: PropTypes.func
+  OnRestore: PropTypes.func.isRequired
 }
