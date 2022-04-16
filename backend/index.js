@@ -1,4 +1,4 @@
-const app = require('fastify')()
+const app = require('fastify')({ logger: true })
 
 const config = require('./config')[process.env.NODE_ENV || 'development']
 

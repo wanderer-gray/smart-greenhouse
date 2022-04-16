@@ -7,7 +7,9 @@ module.exports = {
     http: true,
     nofity: true,
     AuthAPI: true,
-    IotsAPI: true
+    IotsAPI: true,
+    MetricAPI: true,
+    EventAPI: true
   },
   extends: [
     'plugin:react/recommended',

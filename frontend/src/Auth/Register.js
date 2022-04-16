@@ -141,8 +141,8 @@ export default function Register ({ OnRegister }) {
       }}
     >
       <Typography
-        variant={'h5'}
         sx={{ mb: 2 }}
+        variant={'h5'}
       >
         Регистрация
       </Typography>

@@ -39,27 +39,25 @@ module.exports = async function (app) {
         additionalProperties: false,
         properties: {
           isAuth: schemas.auth.isAuth,
-          right: schemas.auth.right
+          rights: schemas.auth.rights
         }
       }
     }
   }
 
   app.get('/init', { schema: initSchema }, async function (request) {
-    const { userId } = request
-
     const isAuth = utils.checkAuth(request)
 
     if (!isAuth) {
       return { isAuth }
     }
 
-    const right = []
+    const rights = []
 
-    const sa = await utils.isSA(userId, knex)
+    const sa = await utils.isSA(request, knex)
 
     if (sa) {
-      right.push({
+      rights.push({
         object: 'iot',
         action: 'create'
       })
@@ -67,7 +65,7 @@ module.exports = async function (app) {
 
     return {
       isAuth,
-      right
+      rights
     }
   })
 

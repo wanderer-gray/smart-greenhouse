@@ -3,7 +3,7 @@ const isAuth = {
   type: 'boolean'
 }
 
-const right = {
+const rights = {
   description: 'Права в системе',
   type: 'array',
   items: {
@@ -40,7 +40,7 @@ const token = {
 
 module.exports = {
   isAuth,
-  right,
+  rights,
   code,
   token
 }

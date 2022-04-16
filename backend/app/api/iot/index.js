@@ -104,6 +104,7 @@ module.exports = async function (app) {
     const query = knex('iot')
       .where('title', 'ilike', `%${title}%`)
       .select('*')
+      .orderBy('iotId')
 
     const sa = await utils.isSA(request, knex)
 
@@ -230,7 +231,7 @@ module.exports = async function (app) {
     }
   }
 
-  app.delete('/delete', { schema: deleteSchema }, async function (request) {
+  app.delete('/delete', { schema: deleteSchema }, async function (request, reply) {
     const { iotId } = request.query
 
     const numberDeletedIots = await knex('iot')
@@ -240,6 +241,8 @@ module.exports = async function (app) {
     if (!numberDeletedIots) {
       throw httpErrors.notFound()
     }
+
+    reply.send()
   })
 
   const ownerSetSchema = {
@@ -256,7 +259,7 @@ module.exports = async function (app) {
     }
   }
 
-  app.post('/owner/set', { schema: ownerSetSchema }, async function (request) {
+  app.post('/owner/set', { schema: ownerSetSchema }, async function (request, reply) {
     const { userId } = request
     const { iotId } = request.query
 
@@ -265,6 +268,8 @@ module.exports = async function (app) {
         userId,
         iotId
       })
+
+    reply.send()
   })
 
   const ownerDeleteSchema = {
@@ -281,19 +286,21 @@ module.exports = async function (app) {
     }
   }
 
-  app.delete('/owner/delete', { schema: ownerDeleteSchema }, async function (request) {
+  app.delete('/owner/delete', { schema: ownerDeleteSchema }, async function (request, reply) {
     const { userId } = request
     const { iotId } = request.query
 
-    const numberUpdated = await knex('iot_owner')
+    const numberDeleted = await knex('iot_owner')
       .where({
         userId,
         iotId
       })
-      .update('userId', null)
+      .del()
 
-    if (!numberUpdated) {
+    if (!numberDeleted) {
       throw httpErrors.notFound()
     }
+
+    reply.send()
   })
 }

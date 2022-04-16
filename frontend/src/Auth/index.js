@@ -27,7 +27,7 @@ export default function Auth ({ children }) {
   const [auth, setAuth] = useState(null)
 
   const isAuth = useMemo(() => auth?.isAuth ?? false, [auth])
-  const right = useMemo(() => auth?.right ?? [], [auth])
+  const rights = useMemo(() => auth?.rights ?? [], [auth])
 
   const init = useCallback(async () => {
     try {
@@ -43,6 +43,15 @@ export default function Auth ({ children }) {
       setAuth(null)
     }
   })
+
+  const can = useCallback(
+    (object, action) =>
+      rights.some(
+        (right) =>
+          right.object === object &&
+          right.action === action
+      )
+  )
 
   const logout = useCallback(async () => {
     try {
@@ -90,7 +99,13 @@ export default function Auth ({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ right, logout }}>
+    <AuthContext.Provider
+      value={{
+        rights,
+        can,
+        logout
+      }}
+    >
       {children}
     </AuthContext.Provider>
   )

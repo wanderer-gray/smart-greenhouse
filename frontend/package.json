@@ -7,7 +7,9 @@
     "@mui/icons-material": "^5.5.1",
     "@mui/material": "^5.5.3",
     "@mui/styles": "^5.5.3",
+    "@mui/x-date-pickers": "^5.0.0-alpha.1",
     "chart.js": "^3.7.1",
+    "date-fns": "^2.28.0",
     "notistack": "^2.0.4",
     "react": "^17.0.2",
     "react-chartjs-2": "^4.1.0",
@@ -26,7 +28,9 @@
       "http": true,
       "nofity": true,
       "AuthAPI": true,
-      "IotsAPI": true
+      "IotsAPI": true,
+      "MetricAPI": true,
+      "EventAPI": true
     },
     "extends": [
       "react-app",

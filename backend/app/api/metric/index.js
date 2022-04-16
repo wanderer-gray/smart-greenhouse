@@ -91,31 +91,34 @@ module.exports = async function (app) {
     response: {
       200: {
         description: 'Метрики группы умных устройств',
-        type: 'object',
-        required: [
-          'iotId',
-          'title',
-          'type',
-          'metrics'
-        ],
-        additionalProperties: false,
-        properties: {
-          iotId: schemas.iot.iotId,
-          title: schemas.iot.title,
-          type: schemas.iot.type,
-          metrics: {
-            description: 'Метрики умного устройства',
-            type: 'array',
-            items: {
-              type: 'object',
-              required: [
-                'value',
-                'createAt'
-              ],
-              additionalProperties: false,
-              properties: {
-                value: schemas.metric.value,
-                createAt: schemas.metric.createAt
+        type: 'array',
+        items: {
+          type: 'object',
+          required: [
+            'iotId',
+            'title',
+            'type',
+            'metrics'
+          ],
+          additionalProperties: false,
+          properties: {
+            iotId: schemas.iot.iotId,
+            title: schemas.iot.title,
+            type: schemas.iot.type,
+            metrics: {
+              description: 'Метрики умного устройства',
+              type: 'array',
+              items: {
+                type: 'object',
+                required: [
+                  'value',
+                  'createAt'
+                ],
+                additionalProperties: false,
+                properties: {
+                  value: schemas.metric.value,
+                  createAt: schemas.metric.createAt
+                }
               }
             }
           }

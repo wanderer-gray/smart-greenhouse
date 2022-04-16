@@ -42,8 +42,8 @@ export default function LogIn ({ OnLogin }) {
       }}
     >
       <Typography
-        variant={'h5'}
         sx={{ mb: 2 }}
+        variant={'h5'}
       >
         Войти в систему
       </Typography>

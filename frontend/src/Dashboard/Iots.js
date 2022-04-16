@@ -3,23 +3,86 @@ import React, {
   useCallback,
   useEffect
 } from 'react'
+import PropTypes from 'prop-types'
+import { useAuth } from '../Auth'
 import { useDashboard } from '.'
 import { useDebounce } from '../utils'
 import {
+  Grid,
   Typography,
   TextField,
   Button
 } from '@mui/material'
-import { styled } from '@mui/system'
-import Iot from './Iot'
+import { DivSpaceBetween } from '../components'
+import CreateIotModal from './CreateIotModal'
+import AppendIotModal from './AppendIotModal'
+import IotCard from './IotCard'
 
-const DivSpaceBetween = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  marginTop: '16px',
-  marginBottom: '16px'
-})
+function CreateIotButton ({ onCreate, ...props }) {
+  const auth = useAuth()
+  const dashboard = useDashboard()
+
+  const [open, setOpen] = useState(false)
+
+  if (!auth.can('iot', 'create')) {
+    return null
+  }
+
+  return (
+    <>
+      <Button
+        {...props}
+        variant={'outlined'}
+        onClick={() => setOpen(true)}
+      >
+        Создать
+      </Button>
+      <CreateIotModal
+        typesList={dashboard.iotTypesList}
+        open={open}
+        onClose={() => setOpen(false)}
+        onCreate={() => {
+          setOpen(false)
+          onCreate()
+        }}
+      />
+    </>
+  )
+}
+
+CreateIotButton.propTypes = {
+  onCreate: PropTypes.func
+}
+
+function AppendIotButton ({ onAppend, ...props }) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <>
+      <Button
+        {...props}
+        size={'small'}
+        color={'success'}
+        variant={'outlined'}
+        onClick={() => setOpen(true)}
+      >
+        Добавить
+      </Button>
+      <AppendIotModal
+        open={open}
+        onClose={() => setOpen(false)}
+        onAppend={() => {
+          setOpen(false)
+          onAppend()
+        }}
+      />
+    </>
+  )
+}
+
+AppendIotButton.propTypes = {
+  onAppend: PropTypes.func
+}
 
 export default function Iots () {
   const dashboard = useDashboard()
@@ -46,27 +109,13 @@ export default function Iots () {
 
   return (
     <>
-      <DivSpaceBetween>
-        <Button
-          variant={'outlined'}
-        >
-          Создать
-        </Button>
-
-        <Button
-          sx={{
-            ml: 2
-          }}
-          color={'success'}
-          variant={'outlined'}
-        >
-          Добавить
-        </Button>
+      <DivSpaceBetween sx={{ mb: 2 }}>
+        <CreateIotButton
+          sx={{ mr: 2 }}
+          onCreate={search}
+        />
 
         <TextField
-          sx={{
-            ml: 2
-          }}
           size={'small'}
           fullWidth={true}
           placeholder={'Название'}
@@ -75,28 +124,36 @@ export default function Iots () {
         />
       </DivSpaceBetween>
 
+      <AppendIotButton
+        sx={{ mb: 2 }}
+        onAppend={search}
+      />
+
       {!iots.length && (
         <Typography variant={'h5'}>
           Ничего не найдено
         </Typography>
       )}
 
-      {iots.map(({ iotId, type, title, hello, min, max }) => {
-        return (
-          <Iot
-            key={iotId}
-            iotId={iotId}
-            type={type}
-            title={title}
-            types={dashboard.iotTypes}
-            hello={hello}
-            min={min}
-            max={max}
-            onUpdate={search}
-            onOwnerDelete={search}
-          />
-        )
-      })}
+      <Grid
+        container={true}
+        spacing={2}
+      >
+        {iots.map((iot) => (
+          <Grid
+            key={iot.iotId}
+            item={true}
+            xs={6}
+          >
+            <IotCard
+              typesMap={dashboard.iotTypesMap}
+              iot={iot}
+              onUpdate={search}
+              onOwnerDelete={search}
+            />
+          </Grid>
+        ))}
+      </Grid>
     </>
   )
 }

@@ -4,6 +4,8 @@ import Nofity from './Nofity'
 import Http from './Http'
 import Api from './Api'
 import Auth from './Auth'
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import Dashboard from './Dashboard'
 
 function App () {
@@ -12,7 +14,9 @@ function App () {
       <Http>
         <Api>
           <Auth>
-            <Dashboard />
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <Dashboard />
+            </LocalizationProvider>
           </Auth>
         </Api>
       </Http>
