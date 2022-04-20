@@ -79,7 +79,7 @@ module.exports = async function (app) {
     return knex.transaction(async (trx) => {
       const iot = await trx('iot')
         .where({ iotId })
-        .select('title', 'type', 'hello', 'min', 'max')
+        .first('title', 'type', 'hello', 'min', 'max')
 
       if (!iot) {
         throw httpErrors.notFound()
