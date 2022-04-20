@@ -55,21 +55,7 @@ module.exports = async function (app) {
       }
     },
     response: {
-      200: {
-        description: 'Настройки умного устройства',
-        type: 'object',
-        required: [
-          'hello',
-          'min',
-          'max'
-        ],
-        additionalProperties: false,
-        properties: {
-          hello: schemas.iot.hello,
-          min: schemas.iot.min,
-          max: schemas.iot.max
-        }
-      }
+      200: schemas.iot.hello
     }
   }
 
@@ -131,11 +117,7 @@ module.exports = async function (app) {
         }
       }
 
-      return {
-        hello,
-        min,
-        max
-      }
+      return hello
     })
   })
 }

@@ -4,7 +4,7 @@ const {
     password
   }
 } = require('../config')[process.env.NODE_ENV || 'development']
-const { user } = require('../enum')
+const { user } = require('../enums')
 const {
   getSalt,
   getHash
