@@ -42,7 +42,7 @@ module.exports = async function (app) {
     description: 'Добавление метрики от умного устройства',
     tags: ['metric'],
     summary: 'Добавление метрики',
-    querystring: {
+    body: {
       type: 'object',
       required: [
         'iotId',
@@ -60,7 +60,7 @@ module.exports = async function (app) {
   }
 
   app.post('/add', { schema: addSchema }, function (request) {
-    const { iotId, value } = request.query
+    const { iotId, value } = request.body
 
     return knex.transaction(async (trx) => {
       const iot = await trx('iot')
