@@ -1,29 +1,5 @@
 const nodemailer = require('nodemailer')
 
-const testOptions = async () => {
-  const testAccount = await nodemailer.createTestAccount()
-
-  const {
-    smtp: {
-      host,
-      port,
-      secure
-    },
-    user,
-    pass
-  } = testAccount
-
-  return {
-    host,
-    port,
-    secure,
-    auth: {
-      user,
-      pass
-    }
-  }
-}
-
 const sendMail = async (mail, transporter) => {
   const info = await transporter.sendMail(mail)
 
@@ -43,9 +19,7 @@ const sendMailNoWait = async (mail, transporter) => {
 }
 
 async function mailer (fastify, options) {
-  const transport = Object.keys(options).length ? options : await testOptions()
-
-  const transporter = nodemailer.createTransport(transport)
+  const transporter = nodemailer.createTransport(options)
 
   fastify.decorate('mailer', {
     sendMail: (mail) => sendMail(mail, transporter),
