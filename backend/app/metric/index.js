@@ -16,6 +16,15 @@ module.exports = async function (app) {
     httpErrors
   } = app
 
+  app.addHook('preHandler', async function (request) {
+    request.log.debug({
+      headers: request.headers,
+      params: request.params,
+      query: request.query,
+      body: request.body
+    })
+  })
+
   const asserValue = (type, value) => {
     switch (type) {
       case LIGHTING:

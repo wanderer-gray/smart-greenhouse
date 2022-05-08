@@ -1,4 +1,9 @@
-const app = require('fastify')({ logger: true })
+const app = require('fastify')({
+  logger: {
+    prettyPrint: true,
+    level: 'trace'
+  }
+})
 
 const config = require('./config')[process.env.NODE_ENV || 'development']
 
@@ -26,18 +31,14 @@ app.register(require('./app'))
 
 app.ready((err) => {
   if (err) {
-    console.error(`Server: Ready error - ${err}`)
     process.exit(1)
   }
 
   app.oas()
 })
 
-app.listen(config.server, (err, addr) => {
+app.listen(config.server, (err) => {
   if (err) {
-    console.error(`Server: Listen error - ${err}`)
     process.exit(1)
   }
-
-  console.info(`Server: Listen address - ${addr}`)
 })
