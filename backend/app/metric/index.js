@@ -104,7 +104,8 @@ module.exports = async function (app) {
         await trx('event')
           .insert({
             metricId,
-            subject
+            subject,
+            text
           })
 
         const email = await trx('user')
